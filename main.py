@@ -8,11 +8,11 @@ def get_footer():
     data = json.loads(r.json()['_elementor_data'][0])
     for element in data:
         # if element["editor"]
-        if element["elements"]["settings"]["editor"]:
-            print(element["elements"]["settings"]["editor"])        
-        else:
-            print(element["elements"]["elements"]["settings"]["editor"])
-        # print(element["elements"])
+        # if element["elements"]["settings"]["editor"]:
+            # print(element["elements"]["settings"]["editor"])        
+        # else:
+            # print(element["elements"]["elements"]["settings"]["editor"])
+        print(element["elements"])
         # break
     # soup = bs.BeautifulSoup(data)
 
