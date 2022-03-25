@@ -3,20 +3,22 @@ import json
 import bs4 as bs
 
 def get_footer():
-    r = requests.get('https://tegelsensanitairbeilen.nl/wp-json/hq/v1/elementor/footer')
-    # data = json.dumps(r.json()['_elementor_data'][0]).encode('utf-8').decode('unicode-escape') # Elementor footer data
+    r = requests.get('http://localhost/linkscript/wp-json/hq/v1/elementor/footer')
     data = json.loads(r.json()['_elementor_data'][0])
     for element in data:
-        # if element["editor"]
-        # if element["elements"]["settings"]["editor"]:
-            # print(element["elements"]["settings"]["editor"])        
-        # else:
-            # print(element["elements"]["elements"]["settings"]["editor"])
-        print(element["elements"])
-        # break
-    # soup = bs.BeautifulSoup(data)
+        for el in element["elements"]:
+            if el["elements"]:
+                for l in el["elements"]:
+                    if l["settings"]["editor"]:
+                        toEdit = l["settings"]["editor"]
 
-    # print(data)
+    
+    print(toEdit)
+
+    toEdit = toEdit.replace("https://webdesignhq.nl/", "https://hqonline.nl/") # Change URL
+    toEdit = toEdit.replace("Webdesignhq", "HQ Online")
+    print(toEdit)
+
 
 def main():
     get_footer()
