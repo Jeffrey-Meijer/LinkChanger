@@ -51,7 +51,7 @@ function expose_elementor_content() {
             }
         ]
     );
-    register_rest_route(
+    register_rest_route( # Add security
         "hq/v1", "/elementor/footer",
         [
             "methods" => "POST",
