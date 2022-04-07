@@ -39,7 +39,19 @@ function expose_elementor_content() {
                         while($the_query->have_posts()) : $the_query->the_post();
                             $post_meta = get_post_meta(get_the_ID());
                             if(in_array("footer",$post_meta["_elementor_template_type"])) {
-                                return $post_meta;
+                                $object = json_decode($post_meta["_elementor_data"][0], true);
+                                $editors = array();
+
+                                array_walk_recursive($object, function($v, $k) use (&$editors) {
+                                  if ($k === 'editor') {
+                                    $editors[] = $v;
+                                  }
+                                });
+
+                                $editors = array_unique($editors);
+
+                                return $editors;
+                                // return json_decode($post_meta["_elementor_data"][0]);
                             }
                         endwhile;
                         wp_reset_query();
@@ -71,8 +83,22 @@ function expose_elementor_content() {
                         while ($the_query->have_posts()) : $the_query->the_post();
                             $post_meta = get_post_meta(get_the_ID());
                             if (in_array("footer", $post_meta["_elementor_template_type"])) {
-                                $new_data = $parameters["_elementor_data"];
-                                // update_post_meta(get_the_ID(), "_elementor_data", $new_data);
+                              $object = json_decode($post_meta["_elementor_data"][0], true);
+                              // $editors = array();
+                              $new_data = $parameters["footer"];
+                              
+                              array_walk_recursive($object, function(&$v, $k) use ($new_data) {
+                                if ($k === 'editor') {
+                                  $v = $new_data; # Also changes other modules with 'editor' in them to the new footer, needs fixing
+                                  // $editors[] = $v;
+                                }
+                              });
+
+                              // $editors = array_unique($editors);
+
+
+                              // echo addslashes(json_encode($object));
+                              update_post_meta(get_the_ID(), "_elementor_data", addslashes(json_encode($object)));
                                 // return $new_data;
                                 // return $post_id;
                             }
