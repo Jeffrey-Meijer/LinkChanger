@@ -30,9 +30,7 @@ function expose_elementor_content() {
                 );
 
                 if (class_exists("\\Elementor\\Plugin")) {
-                    $post_id = $req->get_param("id");
                     
-                    $pluginElementor = \Elementor\Plugin::instance();
                     $the_query = new WP_Query($args);
                     
                     if($the_query->have_posts()): 
@@ -43,7 +41,7 @@ function expose_elementor_content() {
                                 $editors = array();
 
                                 array_walk_recursive($object, function($v, $k) use (&$editors) {
-                                  if ($k === 'editor') {
+                                  if ($k === 'editor' && strpos($v, 'webdesignhq') !== false && strpos($v, 'webdesignhq.nl') !== false) {
                                     $editors[] = $v;
                                   }
                                 });
@@ -51,7 +49,6 @@ function expose_elementor_content() {
                                 $editors = array_unique($editors);
 
                                 return $editors;
-                                // return json_decode($post_meta["_elementor_data"][0]);
                             }
                         endwhile;
                         wp_reset_query();
@@ -73,10 +70,8 @@ function expose_elementor_content() {
                     "posts_per_page" => -1
                 );
                 if (class_exists("\\Elementor\\Plugin")) {
-                    $post_id = $req->get_param("id");
                     $parameters = $req->get_params();
 
-                    $pluginElementor = \Elementor\Plugin::instance();
                     $the_query = new WP_Query($args);
 
                     if ($the_query->have_posts()) :
@@ -84,31 +79,20 @@ function expose_elementor_content() {
                             $post_meta = get_post_meta(get_the_ID());
                             if (in_array("footer", $post_meta["_elementor_template_type"])) {
                               $object = json_decode($post_meta["_elementor_data"][0], true);
-                              // $editors = array();
                               $new_data = $parameters["footer"];
                               
                               array_walk_recursive($object, function(&$v, $k) use ($new_data) {
-                                if ($k === 'editor') {
-                                  $v = $new_data; # Also changes other modules with 'editor' in them to the new footer, needs fixing
-                                  // $editors[] = $v;
+                                if ($k === 'editor' && strpos($v, 'webdesignhq') !== false && strpos($v, 'webdesignhq.nl') !== false) { # Now checks if the word "webdesignhq" and "webdesignhq.nl" is in the value.
+                                  $v = $new_data;
                                 }
                               });
 
-                              // $editors = array_unique($editors);
-
-
-                              // echo addslashes(json_encode($object));
                               update_post_meta(get_the_ID(), "_elementor_data", addslashes(json_encode($object)));
-                                // return $new_data;
-                                // return $post_id;
                             }
                         endwhile;
                         wp_reset_query();
                     endif;
                 }
-                // $id = $req->get_param("id");
-                // $data = $req->get_param("data");
-                // return $data;
             }
         ]
     );
