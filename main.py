@@ -1,3 +1,4 @@
+import json
 import requests
 
 url = "https://server2.webdesignhq.shockmedia.nl/~hqlinkchanger"
@@ -20,13 +21,26 @@ def send_data(new_footer):
   """
   Sends the new footer to the website. This is done using the exposed rest api.
   """
+  # NIET VERLIEZEN
+  f = open('config.json')
+  data = json.load(f)
+
+  jwt_token = data["jwt_token"]
+
   obj = {
-      "footer": new_footer
+      "footer": new_footer,
+      "jwt_token": jwt_token
   }
   r = requests.post(f"{url}/{endpoint}", data=obj)
   status = r.status_code
   if status == 200:
-      print(r.text)
+      if r.text:
+        message = json.loads(json.loads(r.text))
+        if message.get("message"):
+          print(message["message"])
+          return False
+      
+      return True
   else:
     print(status)
 
@@ -37,8 +51,11 @@ def main():
   """
   new_footer = replace_footer(get_obj())
   if new_footer != None:
-      send_data(new_footer)
-      print('Header changed!')
+      req = send_data(new_footer)
+      if req:
+        print('Header changed!')
+      else:
+        print("Header failed to change!")
   else:
       print('Header failed to change!')
 

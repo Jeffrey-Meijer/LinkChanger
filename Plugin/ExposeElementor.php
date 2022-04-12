@@ -65,34 +65,39 @@ function expose_elementor_content() {
         [
             "methods" => "POST",
             "callback" => function(\WP_REST_Request $req) {
-                $args = array(
-                    "post_type" => "elementor_library",
-                    "posts_per_page" => -1
-                );
-                if (class_exists("\\Elementor\\Plugin")) {
-                    $parameters = $req->get_params();
+              $args = array(
+                "post_type" => "elementor_library",
+                "posts_per_page" => -1
+              );
+              if (class_exists("\\Elementor\\Plugin")) {
+                  $parameters = $req->get_params();
+                  // Check if JWT matches
+                  $encoded_jwt = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SjFjMlZ5Ym1GdFpTSTZJbWh4TFc5dWJHbHVaU0lzSW5CaGMzTWlPaUpVVlhRMFpFdG1VVlo2WmtKaGVERmFOR1owZFdSeWMzZ2lmUS5WYmZIbGF1bGh3RktybG9Zc0t0NFp1eGNFcEt6NGFiLU0zNTdKeGRUaXFr";
+                  if (base64_encode($parameters["jwt_token"]) != $encoded_jwt) {
+                      return '{"message": "Incorrect authentication supplied!"}';
+                  } 
 
-                    $the_query = new WP_Query($args);
+                  $the_query = new WP_Query($args);
 
-                    if ($the_query->have_posts()) :
-                        while ($the_query->have_posts()) : $the_query->the_post();
-                            $post_meta = get_post_meta(get_the_ID());
-                            if (in_array("footer", $post_meta["_elementor_template_type"])) {
-                              $object = json_decode($post_meta["_elementor_data"][0], true);
-                              $new_data = $parameters["footer"];
+                  if ($the_query->have_posts()) :
+                      while ($the_query->have_posts()) : $the_query->the_post();
+                          $post_meta = get_post_meta(get_the_ID());
+                          if (in_array("footer", $post_meta["_elementor_template_type"])) {
+                            $object = json_decode($post_meta["_elementor_data"][0], true);
+                            $new_data = $parameters["footer"];
                               
-                              array_walk_recursive($object, function(&$v, $k) use ($new_data) {
-                                if ($k === 'editor' && strpos($v, 'webdesignhq') !== false && strpos($v, 'webdesignhq.nl') !== false) { # Now checks if the word "webdesignhq" and "webdesignhq.nl" is in the value.
-                                  $v = $new_data;
-                                }
-                              });
+                            array_walk_recursive($object, function(&$v, $k) use ($new_data) {
+                              if ($k === 'editor' && strpos($v, 'webdesignhq') !== false && strpos($v, 'webdesignhq.nl') !== false) { # Now checks if the word "webdesignhq" and "webdesignhq.nl" is in the value.
+                                $v = $new_data;
+                              }
+                            });
 
-                              update_post_meta(get_the_ID(), "_elementor_data", addslashes(json_encode($object)));
-                            }
-                        endwhile;
-                        wp_reset_query();
-                    endif;
-                }
+                            update_post_meta(get_the_ID(), "_elementor_data", addslashes(json_encode($object)));
+                          }
+                      endwhile;
+                    wp_reset_query();
+                endif;
+              }
             }
         ]
     );
