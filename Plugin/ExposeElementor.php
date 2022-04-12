@@ -72,8 +72,7 @@ function expose_elementor_content() {
               if (class_exists("\\Elementor\\Plugin")) {
                   $parameters = $req->get_params();
                   // Check if JWT matches
-                  $encoded_jwt = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SjFjMlZ5Ym1GdFpTSTZJbWh4TFc5dWJHbHVaU0lzSW5CaGMzTWlPaUpVVlhRMFpFdG1VVlo2WmtKaGVERmFOR1owZFdSeWMzZ2lmUS5WYmZIbGF1bGh3RktybG9Zc0t0NFp1eGNFcEt6NGFiLU0zNTdKeGRUaXFr";
-                  if (base64_encode($parameters["jwt_token"]) != $encoded_jwt) {
+                  if (base64_encode($parameters["jwt_token"]) != $parameters["encoded_jwt_token"]) {
                       return '{"message": "Incorrect authentication supplied!"}';
                   } 
 

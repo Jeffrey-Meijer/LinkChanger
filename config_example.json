@@ -1,3 +1,4 @@
 {
-  "jwt_token": "token_here"
+  "jwt_token": "token_here",
+  "encoded_jwt_token": "encoded_token_here"
 }

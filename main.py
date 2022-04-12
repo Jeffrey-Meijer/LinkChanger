@@ -26,10 +26,12 @@ def send_data(new_footer):
   data = json.load(f)
 
   jwt_token = data["jwt_token"]
+  encoded_jwt_token = data["encoded_jwt_token"]
 
   obj = {
       "footer": new_footer,
-      "jwt_token": jwt_token
+      "jwt_token": jwt_token,
+      "encoded_jwt_token": encoded_jwt_token
   }
   r = requests.post(f"{url}/{endpoint}", data=obj)
   status = r.status_code
